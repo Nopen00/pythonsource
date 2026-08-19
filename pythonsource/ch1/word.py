@@ -20,7 +20,7 @@ import time, random
 game_count = 0
 
 word_txt=[]
-with open ('./ch1/data/word.txt','r',encoding='utf-8') as f:
+with open ('./data/word.txt','r',encoding='utf-8') as f:
 
     list1 = f.readlines()
     random.shuffle(list1)
@@ -47,4 +47,34 @@ else:
     print('나가')
 
 end = time.time()
-print(f'총 정답 : {game_count}\n시간 : {(time.time()- start):.2f}')
+et = time.time()- start
+print(f'총 정답 : {game_count}\n시간 : {(et):.2f}')
+
+
+
+
+# db
+import sqlite3
+conn = sqlite3.connect("../db/test.db", isolation_level=None)
+cursor = conn.cursor()
+
+sql = """create table if not exists records(corr_cnt integer,
+record text,
+regdate text
+)
+"""
+
+cursor.execute(sql)
+
+# insert 작업(기록 삽입)
+from datetime import datetime
+now = datetime.now()
+nowDateTime = now.strftime("%Y-%m-%d %H:%M:%S")
+sql = "insert into records(corr_cnt,record,regdate) values(?,?,?)"
+cursor.execute(sql, (game_count, et, nowDateTime))
+
+
+
+
+
+
