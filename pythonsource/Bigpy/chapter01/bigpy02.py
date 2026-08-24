@@ -1,0 +1,10 @@
+import pickle
+# pickle 모듈은 파이썬 객체를 파일로 저장하고 읽어들임
+# 저장된 상태에서 프로그램이 종료되면 객체는 자동 소멸됨
+
+
+f = open('setting.txt', 'rb')
+setting = pickle.load(f, encoding='utf-8')
+f.close()
+
+print(setting)
