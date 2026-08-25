@@ -33,3 +33,17 @@ car_func('#cars #gr') # 아이디가 #car이면서 그 아래 어딘가에 있�
 car_func('#cars>#gr') # 아이디가 #car의 직계자식중 id가 gr
 # car_func("li*[id='gr']") 뭔가 안되는중
 
+# 람다식(매개변수:q)
+car_lambda = lambda q: print('car_func: ', soup.select_one(q).string)
+
+# 메인
+car_lambda('#gr') 
+car_lambda('li#gr')
+car_lambda('ul>#gr')    #아래 구문과 같으쓰면 좋음
+car_lambda('#cars #gr') #단 좀 과감한 방식이라 오류 생각해야함
+car_lambda('#cars>#gr') 
+# car_lambda("li*[id='gr']") 뭔가 안되는중
+
+print("--------------------------------------------------")
+print("car_func", soup.select("li")[3].string)
+print("car_func", soup.find_all("li")[3].string)
