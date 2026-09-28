@@ -1,8 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
-from models.board import  BoardInsert, Board, Comment
+from models.board import BoardInsert, Board, Comment
 
 board_router = APIRouter()
-
 
 
 datas = [
@@ -68,32 +67,35 @@ datas = [
   }
 ]
 
+
 boards = [Board(**b) for b in datas]
 
 
-
 # 전체 조회 + GET : http://localhost:8000/boards
-@board_router.get('', response_model=list[Board])
+
+@board_router.get("", response_model=list[Board])
 async def get_boards():
     return boards
 
+
 # 하나 조회 + GET: http://localhost:8000/boards/1
 @board_router.get("/{id}", response_model=Board)
-async def get_board(id: int):
+async def get_board(id:int):
     for board in boards:
         if board.id == id:
             return board
     return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="찾는 board가 없습니다.")
 
-# 댓글 조회 + GET : http://localhost:8000/boards/1/comments
+
+# 댓글 조회 + GET : http://localhost:8000/boards/1/comments 
 @board_router.get("/{id}/comments", response_model=list[Comment])
-async def get_board_comments(id: int):
+async def get_board_comments(id:int):
     return []
 
 
 # 하나 수정 + PUT : http://localhost:8000/boards/1 + 수정데이터
 @board_router.put("/{id}", response_model=Board)
-async def put_board(id:int, update_board:Board):
+async def put_board(id:int,update_board:Board):
     for board in boards:
         if board.id == id:
             board.title = update_board.title
@@ -101,21 +103,23 @@ async def put_board(id:int, update_board:Board):
             return board
     return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="찾는 board가 없습니다.")
 
-# 하나 삭제 + DELETE : http://localhost:8000/boards/1
+
+# 하나 삭제 + DELETE : http://localhost:8000/boards/1 
 @board_router.delete("/{id}", response_model=list[Board])
-async def put_board(id: int):
+async def put_board(id:int):
     for board in boards:
         if board.id == id:
             boards.remove(board)
             return boards
     return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="찾는 board가 없습니다.")
 
-# 하나 추가
-@board_router.post('', response_model=Board)
-async def post_board(data:BoardInsert):
-    new_id = max(board.id for board in boards) + 1
 
-    board = Board(userId=data.userId, title= data.title, body= data.body, id= new_id)
+# 하나 추가 + POST http://localhost:8000/boards + 삽입할 내용
+@board_router.post("", response_model=Board)
+async def post_board(data:BoardInsert):
+    # boards => Board
+    new_id = max(board.id for board in boards) + 1
+    board = Board(id=new_id, userId=data.userId, title=data.title, body=data.body)
     boards.append(board)
 
     return HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="서버 오류가 발생했습니다.")
