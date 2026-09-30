@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers.task import task_router
+from core.lifespan import lifespan
 
+app = FastAPI(lifespan=lifespan, title="Task Project", version='1.0')
 
-app = FastAPI()
 
 # CORS 설정
 app.add_middleware(
