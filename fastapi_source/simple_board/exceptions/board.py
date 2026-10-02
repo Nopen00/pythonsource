@@ -4,6 +4,7 @@
 class BoardNotFoundException(Exception):
     pass
 
-class BoardrAlreadyExistsException(Exception):
+class CommentNotFoundException(Exception):
     pass
+
 

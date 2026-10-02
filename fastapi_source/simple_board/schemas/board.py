@@ -4,6 +4,24 @@
 from pydantic import BaseModel
 from datetime import datetime
 
+
+class UserResponse(BaseModel):
+    user_id: int
+    name:str
+
+
+class CommentResopnse(BaseModel):
+    comment_id: int
+    body:str
+    user_id:int
+    # 댓글 작성자 정보
+    user: UserResponse
+    board_id:int
+    created_at:datetime
+
+
+
+
 class BoardCreate(BaseModel):
     user_id: int
     title:str
@@ -19,6 +37,10 @@ class BoardResponse(BaseModel):
     contents:str
     user_id: int
     created_at : datetime
+    # 게이글 작성자 이름
+    user: UserResponse
+    # 댓글 목록
+    comments:list[CommentResopnse]
 
 
 class BoardPageResponse(BaseModel):
