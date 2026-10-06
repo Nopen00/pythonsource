@@ -37,4 +37,4 @@ async def delete_comment(comment_id: int, db:Session=Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='삭제할 comment가 없습니다.')
 
 
-    return {'message':f'comment{id}번 삭제 성공'}
+    return {'message':f'comment{comment_id}번 삭제 성공'}
