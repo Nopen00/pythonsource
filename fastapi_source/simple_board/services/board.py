@@ -10,16 +10,19 @@ import math
 from repository.models.user import User
 from exceptions.user import UserNotFoundException
 
-def create(db: Session, data: BoardCreate, current_user:User):
+
+def create(db: Session, data: BoardCreate, current_user: User):
     # 스키마 => 테이블 연결 모델
-    board = Board(title=data.title, contents=data.contents, user_id=current_user.user_id)
+    board = Board(
+        title=data.title, contents=data.contents, user_id=current_user.user_id
+    )
     db.add(board)
     db.commit()
     db.refresh(board)
     return board
 
 
-def update(id: int, db: Session, data: BoardUpdate, current_user:User ):
+def update(id: int, db: Session, data: BoardUpdate, current_user: User):
     # 수정할 대상 찾기
     board = db.get(Board, id)
 
@@ -63,7 +66,7 @@ def select_one(db: Session, id: int):
 
     board = db.scalar(stmt)
     if board is None:
-        BoardNotFoundException
+        raise BoardNotFoundException
 
     return board
 
@@ -74,9 +77,19 @@ def recentPosts(db: Session):
 
 
 # page, size 이용하는 전체조회
-def select_all(db: Session, page: int, size: int):
+def select_all(db: Session, page: int, size: int, criteria: str, keyword: str):
     # select * from boards
     query = db.query(Board)
+
+    if keyword:
+        if criteria == "tc":
+            query = query.filter(
+                Board.title.contains(keyword) | Board.contents.contains(keyword)
+            )
+        elif criteria == "t":
+            query = query.filter(Board.title.contains(keyword))
+        elif criteria == "w":
+            query = query.join(Board.user).filter(User.name.contains(keyword))
 
     # 전체 개수 (페이지 수 알아내기 위해서)
     total = query.count()
@@ -90,14 +103,15 @@ def select_all(db: Session, page: int, size: int):
         "page": page,
         "size": size,
         "total_pages": total_pages,
+        "criteria": criteria,
+        "keyword": keyword,
     }
 
 
 # 삭제
-def delete(db: Session, id: int, current_user:User):
+def delete(db: Session, id: int, current_user: User):
     # 삭제할 대상 찾기
     board = db.get(Board, id)
-
 
     if board is None:
         BoardNotFoundException

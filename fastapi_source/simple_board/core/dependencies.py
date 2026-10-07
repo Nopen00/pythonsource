@@ -5,6 +5,7 @@ from utils.security import verify_access_token
 from repository.database import get_db
 from repository.models.user import User
 from exceptions.user import UserNotFoundException, UserCredentialsException
+from services.user import get_user
 
 
 # from submit
@@ -25,9 +26,5 @@ def get_current_user(
     if user_id is None:
         raise UserCredentialsException
 
-    user = db.get(User, user_id)
 
-    if user is None:
-        raise UserNotFoundException
-
-    return user
+    return get_user(db, int(user_id))
