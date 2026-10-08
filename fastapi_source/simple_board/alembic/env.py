@@ -1,3 +1,15 @@
+'''
+변경된 부분을 기록
+simple_board > uv run alembic revision --autogenerate -m "add views"
+
+명령어
+초기화 : alembic init 폴더명 => 지정한폴더 + *.ini
+마이그레이션 파일 생성 : alembic revision --autogenerate -m 메세지
+최신 db 상태로 업그레이드 : alembic upgrade head
+이전 버전으로 롤백 : alembic downgrade -1
+'''
+
+
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -5,11 +17,10 @@ from sqlalchemy import pool
 
 from alembic import context
 
-# 데이터베이스와 연덩하는 정보 추가
-from simple_board.repository.database import engine, Base
-from simple_board.repository.models.board import Board
-from simple_board.repository.models.user import User
-from simple_board.repository.models.comment import Comment
+from repository.database import engine, Base
+from repository.models.board import Board, Board_Views
+from repository.models.user import User
+from repository.models.comment import Comment
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -32,6 +43,13 @@ target_metadata = Base.metadata
 # ... etc.
 
 
+# python_user의 모든 테이블 관리함 => 필요한 테이블만 지정
+def include_object(object, name, type_, reflected, compare_to):
+    if type_ == "table":
+        return name in {"boards", "board_users", "comment",'board_views'}
+    return True
+
+
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 
@@ -50,6 +68,7 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        include_object=include_object,
     )
 
     with context.begin_transaction():
@@ -63,11 +82,12 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-   
 
-    with engine.connectable.connect() as connection:
+    with engine.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection,
+            target_metadata=target_metadata,
+            include_object=include_object,
         )
 
         with context.begin_transaction():

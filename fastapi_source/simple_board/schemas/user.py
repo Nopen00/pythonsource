@@ -18,6 +18,8 @@ def validate_password_strength(v:str) -> str:
     return v
 
 Password = Annotated[str, Field(min_length=8,max_length=64), AfterValidator(validate_password_strength)]
+
+
 # 회원가입 - 비밀번호 규칙 적용(대문자, 소문자, 숫자 , 특수문자(@!$*-))
 class UserCreate(BaseModel):
     email: EmailStr

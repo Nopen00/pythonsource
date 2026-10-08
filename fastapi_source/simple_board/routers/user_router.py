@@ -50,6 +50,8 @@ async def post_signup(data: UserCreate, db: Session = Depends(get_db)) -> dict:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT, detail="중복된 이메일이 존재합니다."
         )
+
+    
     return {"message": "회원가입이 완료 되었습니다.", "user_id": user.user_id}
 
 
